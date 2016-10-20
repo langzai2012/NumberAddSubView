@@ -13,6 +13,7 @@ import android.widget.TextView;
  * Created by Administrator on 2016/10/20 0020.
  */
 public class NumberAddSubView extends LinearLayout implements View.OnClickListener {
+
     private LayoutInflater mInflater;
     private Button mBtnAdd;
     private Button mBtnSub;
