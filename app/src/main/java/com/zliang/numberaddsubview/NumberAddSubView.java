@@ -1,6 +1,8 @@
 package com.zliang.numberaddsubview;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -36,6 +38,45 @@ public class NumberAddSubView extends LinearLayout implements View.OnClickListen
     public NumberAddSubView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initView(context);
+
+        if (attrs != null) {
+            initData(context, attrs, defStyleAttr);
+        }
+    }
+
+    private void initData(Context context, AttributeSet attrs, int defStyleAttr) {
+        TypedArray tp = null;
+        try {
+            tp = context.obtainStyledAttributes(attrs, R.styleable.NumberAddSubView, defStyleAttr, 0);
+            int defalutValue = tp.getInt(R.styleable.NumberAddSubView_defaultValue, 0);
+            setValue(defalutValue);
+            int maxValue = tp.getInt(R.styleable.NumberAddSubView_maxValue, 100);
+            setMaxValue(maxValue);
+            int minValue = tp.getInteger(R.styleable.NumberAddSubView_minValue, 0);
+            setMinValue(minValue);
+
+            Drawable addDrawable = tp.getDrawable(R.styleable.NumberAddSubView_btnAddBackground);
+            Drawable subDrawable = tp.getDrawable(R.styleable.NumberAddSubView_btnSubBackground);
+            Drawable textDrawable = tp.getDrawable(R.styleable.NumberAddSubView_textBackground);
+
+            setBackGroundDrawable(mBtnAdd, addDrawable);
+            setBackGroundDrawable(mBtnSub, subDrawable);
+            setTextViewBackgroundDrawable(mTvNumber, textDrawable);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (tp != null) {
+                tp.recycle();
+            }
+        }
+    }
+
+    private void setBackGroundDrawable(Button btn, Drawable drawable) {
+        btn.setBackgroundDrawable(drawable);
+    }
+
+    private void setTextViewBackgroundDrawable(TextView tv, Drawable drawable) {
+        tv.setBackgroundDrawable(drawable);
     }
 
     private void initView(Context context) {
@@ -51,9 +92,9 @@ public class NumberAddSubView extends LinearLayout implements View.OnClickListen
     public int getValue() {
         String val = mTvNumber.getText().toString();
         if (!TextUtils.isEmpty(val)) {
-            this.value = Integer.parseInt(val);
+            value = Integer.parseInt(val);
         }
-        return this.value;
+        return value;
     }
 
     @Override
@@ -64,13 +105,25 @@ public class NumberAddSubView extends LinearLayout implements View.OnClickListen
                 mListener.onButtonAddClick(v, getValue());
             }
         } else if (v.getId() == R.id.btn_sub) {
-
+            numberSub();
+            if (mListener != null) {
+                mListener.onButtonSubClick(v, getValue());
+            }
         }
     }
 
     private void numberAdd() {
         if (value < maxValue) {
             value += 1;
+        }
+        mTvNumber.setText(value + "");
+    }
+
+    private void numberSub() {
+        if (value > 0) {
+            value -= 1;
+        } else {
+            value = 0;
         }
         mTvNumber.setText(value + "");
     }
@@ -86,6 +139,7 @@ public class NumberAddSubView extends LinearLayout implements View.OnClickListen
     }
 
     public void setValue(int value) {
+        mTvNumber.setText(value + "");
         this.value = value;
     }
 
